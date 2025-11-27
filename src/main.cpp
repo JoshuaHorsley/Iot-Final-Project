@@ -2,6 +2,8 @@
 #include "mqtt_handler.h"
 #include "sensors.h"
 #include "gui.h"
+#include "microphone.h"
+#include "speaker.h"
 
 unsigned long lastPublish = 0;
 const unsigned long publishInterval = 1000;

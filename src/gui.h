@@ -2,7 +2,6 @@
 #define GUI_H
 
 #include "config.h"
-#include "config.h"
 #include <M5Unified.h>
 
 void updateBackground(bool sending);

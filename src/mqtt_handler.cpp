@@ -1,6 +1,4 @@
 #include "mqtt_handler.h"
-#include "config.h"
-#include <M5Unified.h>
 
 WiFiClientSecure espClient;
 PubSubClient client(espClient);

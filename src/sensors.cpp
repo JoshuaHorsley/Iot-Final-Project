@@ -6,7 +6,6 @@
 static SHT4X sht4;
 static BMP280 bmp;
 static bool env_ok = false;
-static char mqtt_buffer[40];
 
 void setup_sensors() {
     Serial.println("Setting up ENV sensors...");
@@ -38,7 +37,7 @@ void publishSensorData() {
         if (sht4.update()) {
             sprintf(mqtt_buffer, "%.2f", sht4.cTemp);
             client.publish((mqtt_base + "sht40/temperature").c_str(), mqtt_buffer);
-            
+
             sprintf(mqtt_buffer, "%.2f", sht4.humidity);
             client.publish((mqtt_base + "sht40/humidity").c_str(), mqtt_buffer);
         }

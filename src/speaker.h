@@ -19,6 +19,7 @@
     //This will pause ALL operations until speaker finishes.
 
 
+    void play_recording(char* buffer, size_t bufferSize);
 
 
 #endif

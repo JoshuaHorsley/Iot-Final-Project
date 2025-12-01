@@ -10,4 +10,6 @@ void publishSensorData();
 
 bool handlePowerButton(bool currentSending);
 
+bool isShaking();
+
 #endif

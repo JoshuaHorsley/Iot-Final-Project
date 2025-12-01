@@ -21,5 +21,6 @@
 
     void play_recording(char* buffer, size_t bufferSize);
 
+    void play_beep();
 
 #endif

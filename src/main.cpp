@@ -54,12 +54,14 @@ void loop() {
         
     mic.RecordOneBlock();
     read_buttons();
-    
+    if(isShaking()){
+        play_beep();
+    }
 
-    // if (isSending && (millis() - lastPublish >= publishInterval)) {
-    //     lastPublish = millis();
-    //     publishSensorData();
-    // }
+    if (isSending && (millis() - lastPublish >= publishInterval)) {
+        lastPublish = millis();
+        publishSensorData();
+    }
 }
 
 

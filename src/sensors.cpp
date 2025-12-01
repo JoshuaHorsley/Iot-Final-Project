@@ -1,7 +1,4 @@
 #include "sensors.h"
-#include "mqtt_handler.h"
-#include <M5Unified.h>
-#include <M5UnitENV.h>
 
 #define EXT_SDA 32
 #define EXT_SCL 33

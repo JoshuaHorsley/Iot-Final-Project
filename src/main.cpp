@@ -1,9 +1,6 @@
-#include <M5Unified.h>
-#include "mqtt_handler.h"
+//Everything is in this include chain.
 #include "sensors.h"
-#include "gui.h"
-#include "microphone.h"
-#include "speaker.h"
+
 
 unsigned long lastPublish = 0;
 const unsigned long publishInterval = 1000;

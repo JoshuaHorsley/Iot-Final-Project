@@ -1,7 +1,7 @@
 #ifndef SPEAKER_H
 #define SPEAKER_H
 
-#include "microphone.h"
+#include "gui.h"
 
 //REMEMBER:
     //IF USING SPEAKER, ALWAYS TURN OFF MIC FIRST.

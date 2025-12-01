@@ -1,6 +1,6 @@
 #ifndef MICROPHONE_H
 #define MICROPHONE_H
-#include "gui.h"
+#include "mqtt_handler.h"
 
 //REMEMBER:
     //IF SOMETHING IS NOT WORKING - DOUBLE CHECK SPEAKER HAS RELINQUISHED CONTROL

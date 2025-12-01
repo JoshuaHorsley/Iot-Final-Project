@@ -1,12 +1,10 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "mqtt_handler.h"
+#include "config.h"
 #include <M5Unified.h>
 
-extern bool isSending;
-
-void updateBackground();
-void checkPowerButton();
+void updateBackground(bool sending);
+void handleIncomingMqttMessage(const String& topic, const String& message);
 
 #endif

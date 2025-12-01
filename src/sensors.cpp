@@ -70,3 +70,16 @@ void publishSensorData() {
     
     Serial.println("=== Done ===\n");
 }
+
+bool handlePowerButton(bool currentSending) {
+    if (M5.BtnB.wasClicked()) {
+        currentSending = !currentSending;
+
+        Serial.print("Data sending: ");
+        Serial.println(currentSending ? "ON" : "OFF");
+
+        client.publish((mqtt_base + "status").c_str(),currentSending ? "sending_on" : "sending_off");
+    }
+
+    return currentSending;
+}

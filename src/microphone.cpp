@@ -60,6 +60,7 @@ bool Microphone::RecordOneBlock(){
 
     //Return early
     if(!M5.Mic.isEnabled()){
+        Serial.println("ERR:Microphone:RecordOneBlock(): M5.Mic.isEnabled() returned FALSE");
         return false;
     }
 
@@ -69,6 +70,7 @@ bool Microphone::RecordOneBlock(){
     //Write accumulated recording data.
     //If false, I think that means something went wrong down in the boiler room? 
     if(!M5.Mic.record(data, RECORDING_SAMPLES_PER_BLOCK, RECORDING_SAMPLE_RATE)){
+        Serial.println("ERR:Microphone:RecordOneBlock(): M5.Mic.record returned FALSE");
         return false;
     }
 
@@ -161,5 +163,9 @@ bool Microphone::PublishRecording(){
         Serial.println("client.publish( rec_mqtt_buffer )  returned FALSE.");
     }
 
+    play_recording((char*)recording_buffer, metaData);
+
+
     return true;
 }
+

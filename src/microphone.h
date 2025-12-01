@@ -5,12 +5,16 @@
 //REMEMBER:
     //IF SOMETHING IS NOT WORKING - DOUBLE CHECK SPEAKER HAS RELINQUISHED CONTROL
 
+
+static constexpr const size_t RECORDING_SAMPLE_RATE = 11025;
+
 static constexpr const size_t RECORDING_BLOCK_COUNT             = 80;
 static constexpr const size_t RECORDING_SAMPLES_PER_BLOCK       = 100;
 
 static constexpr const size_t RECORDING_BUFFER_SIZE         = RECORDING_BLOCK_COUNT * RECORDING_SAMPLES_PER_BLOCK;
-static constexpr const size_t RECORDING_SAMPLE_RATE         = 22050;
 static constexpr const size_t RECORDING_MQTT_BUFFER_SIZE    = (RECORDING_BUFFER_SIZE * 2) + 100;
+
+
 
 class Microphone{
     public:

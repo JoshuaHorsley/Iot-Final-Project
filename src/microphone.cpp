@@ -1,3 +1,12 @@
+/*
+    File: microphone.cpp
+    Date: 2025-11-31
+    Author: Josh Rice
+    Description:
+        This file contains the functions responsible for recording microphone data,
+        writing the data to the MQTT buffer, and publishing the data to MQTT
+*/
+
 #include "microphone.h"
 
 Microphone::Microphone(){

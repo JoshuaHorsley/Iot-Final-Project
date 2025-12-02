@@ -1,3 +1,12 @@
+/*
+    File: Sensors.cpp
+    Date: 2025-11-31
+    Author: Josh Horsley & Josh Rice
+    Description:
+        This file is responsible for the setup, collection, and publishing
+        of SHT4X and BMP280 sensors, and checking if the m5 stick is shaking.
+*/
+
 #include "sensors.h"
 
 #define EXT_SDA 32

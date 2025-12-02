@@ -1,3 +1,13 @@
+/*
+    File: gui.cpp
+    Date: 2025-11-30
+    Author: Josh Horsley & Christian Tan
+    Description:
+        This file contains the functions responsible for displaying the GUI
+        on the m5 stick. This file is also responsible for locking and unlocking
+        the display.
+*/
+
 #include "gui.h"
 
 static String currentTopic = "";

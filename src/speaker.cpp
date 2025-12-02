@@ -1,3 +1,12 @@
+/*
+    File: speaker.cpp
+    Date: 2025-12-1
+    Author: Josh Rice
+    Description:
+        This file is responsible for playing audio recordings received to the speaker
+        and playing the beeping noise when the device is being shaken.
+*/
+
 #include "speaker.h"
 
 

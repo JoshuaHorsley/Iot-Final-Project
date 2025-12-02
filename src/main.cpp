@@ -1,3 +1,12 @@
+/*
+    File: main.cpp
+    Date: 2025-11-30
+    Author: Christian Tan, Josh Horsley, Josh Rice
+    Description:
+        This file is responsible for handling the setup and loop of the application
+        as well as power button and button A checks.
+*/
+
 //Everything is in this include chain.
 #include "sensors.h"
 

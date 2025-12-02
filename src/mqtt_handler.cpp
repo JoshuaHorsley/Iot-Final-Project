@@ -1,3 +1,14 @@
+/*
+    File: mqtt_handler.cpp
+    Date: 2025-11-30
+    Author: Christian Tan
+    Description:
+        This file contains the functions for setting up wifi on the
+        m5 stick, connecting to the MQTT server, and handling
+        the MQTT callback. The MQTT callback function parses the payload
+        received and sends the message to the GUI or speaker.
+*/
+
 #include "mqtt_handler.h"
 
 WiFiClientSecure espClient;
@@ -115,8 +126,6 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
         play_recording((char*)payload, latest_mic_byte_count);
         return;
    }
-
-
    
     //If not a giant mic bytes array, convert bytes from payload
     String message;
@@ -195,9 +204,6 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
         }
         return;
     }
-
-
-
 
     //Pass in DeviceID/subtopic name
     String subtopicName = topicParts[2] + "/" + topicParts[3];

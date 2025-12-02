@@ -1,6 +1,7 @@
 #ifndef MQTT_HANDLER_H
 #define MQTT_HANDLER_H
 
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
@@ -10,6 +11,8 @@
 extern WiFiClientSecure espClient;
 extern PubSubClient client;
 extern String mqtt_base;
+static char mqtt_buffer[40];
+
 
 void setup_wifi();
 void initMQTT();

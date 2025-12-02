@@ -1,5 +1,4 @@
 #include "gui.h"
-#include <M5Unified.h>
 
 static String currentTopic = "";
 static String currentMessage = "";

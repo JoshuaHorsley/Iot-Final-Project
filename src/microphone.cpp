@@ -3,6 +3,7 @@
 Microphone::Microphone(){
     next_index = 0;
     recording_buffer = nullptr;
+    rec_mqtt_buffer = nullptr;
 }
 
 Microphone::~Microphone(){
@@ -15,7 +16,8 @@ Microphone::~Microphone(){
 bool Microphone::Init(){
     
     //Yell at them for calling Init() twice.
-    if(recording_buffer != nullptr){
+    if(recording_buffer != nullptr || rec_mqtt_buffer !=nullptr){
+        Serial.println("ERR:Microphone:Init: Recording_buffer or mqtt_buffer are no longer nullptrs. Did you call init twice?");
         return false;
     }
 
@@ -26,11 +28,22 @@ bool Microphone::Init(){
 
     //If allocation failed, return false.
     if(recording_buffer == NULL){
+        Serial.println("ERR:Microphone:Init(): allocation failed for recording_buffer");
+        return false;
+    }
+
+
+    rec_mqtt_buffer = (typeof(rec_mqtt_buffer))heap_caps_malloc(
+        RECORDING_MQTT_BUFFER_SIZE * sizeof(char), MALLOC_CAP_8BIT);
+    
+    if(rec_mqtt_buffer == NULL){
+        Serial.println("ERR:Microphone:Init(): allocation failed for mqtt_buffer");
         return false;
     }
 
     //Init all memory to 0
     memset(recording_buffer, 0, RECORDING_BUFFER_SIZE * sizeof(int16_t));
+    memset(rec_mqtt_buffer, 0, RECORDING_MQTT_BUFFER_SIZE);
 
     return true;
 }
@@ -47,6 +60,7 @@ bool Microphone::RecordOneBlock(){
 
     //Return early
     if(!M5.Mic.isEnabled()){
+        Serial.println("ERR:Microphone:RecordOneBlock(): M5.Mic.isEnabled() returned FALSE");
         return false;
     }
 
@@ -56,6 +70,7 @@ bool Microphone::RecordOneBlock(){
     //Write accumulated recording data.
     //If false, I think that means something went wrong down in the boiler room? 
     if(!M5.Mic.record(data, RECORDING_SAMPLES_PER_BLOCK, RECORDING_SAMPLE_RATE)){
+        Serial.println("ERR:Microphone:RecordOneBlock(): M5.Mic.record returned FALSE");
         return false;
     }
 
@@ -67,8 +82,6 @@ bool Microphone::RecordOneBlock(){
 
     return true;    
 }
-
-
 
 //Copy to Mqtt buffer.
 //It felt wrong to do the actual publishing in here.
@@ -114,6 +127,44 @@ bool Microphone::WriteToMqttBuffer(char* buffer, size_t buffer_size){
         &recording_buffer[0],
         second_half_byte_count);
     }
+
+    return true;
+}
+
+bool Microphone::PublishRecording(){
+
+    if(recording_buffer == nullptr || rec_mqtt_buffer == nullptr){
+        Serial.println("ERR:Microphone:PublishRecording: Failed to initialze buffers. Aborting publish.");
+        return false;
+    }
+
+    if(!WriteToMqttBuffer(this->rec_mqtt_buffer, RECORDING_MQTT_BUFFER_SIZE)){
+        Serial.println("ERR:Microphone:PublishRecording: Write to MQTT buffer failed. Aborting publish.");
+        return false;
+    }
+
+    String metaTopic = mqtt_base + "mic/meta";
+    String dataTopic = mqtt_base + "mic/bytes";
+
+
+    const int metaData = RECORDING_BUFFER_SIZE * sizeof(int16_t);
+    char temp_buffer[40];
+    memset(temp_buffer, 0, 40);
+    sprintf(temp_buffer, "%d", metaData);
+
+    if(!client.publish(metaTopic.c_str(), temp_buffer)){
+        Serial.println("client.publish( metadata )  returned FALSE.");
+    }
+
+    Serial.print("MQTT BUFFER SIZE: ");
+    Serial.println(client.getBufferSize());
+
+    if(!client.publish(dataTopic.c_str(), (uint8_t*)rec_mqtt_buffer, metaData)){
+        Serial.println("client.publish( rec_mqtt_buffer )  returned FALSE.");
+    }
+
+    play_recording((char*)recording_buffer, metaData);
+
 
     return true;
 }

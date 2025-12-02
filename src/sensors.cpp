@@ -6,7 +6,10 @@
 static SHT4X sht4;
 static BMP280 bmp;
 static bool env_ok = false;
-static char mqtt_buffer[40];
+
+static int shake_count = 0;
+static int missed_shake_count = 0;
+
 
 void setup_sensors() {
     Serial.println("Setting up ENV sensors...");
@@ -38,7 +41,7 @@ void publishSensorData() {
         if (sht4.update()) {
             sprintf(mqtt_buffer, "%.2f", sht4.cTemp);
             client.publish((mqtt_base + "sht40/temperature").c_str(), mqtt_buffer);
-            
+
             sprintf(mqtt_buffer, "%.2f", sht4.humidity);
             client.publish((mqtt_base + "sht40/humidity").c_str(), mqtt_buffer);
         }
@@ -82,4 +85,42 @@ bool handlePowerButton(bool currentSending) {
     }
 
     return currentSending;
+}
+
+bool isShaking(){
+    if(!env_ok){
+        Serial.println("ERR:isShaking(): environment was not initalized properly.");
+        return false;
+    }
+    if (M5.Imu.update()) {
+        
+        auto data = M5.Imu.getImuData();
+    
+        float averageAccel = (data.accel.x + data.accel.y + data.accel.z) / 3;
+    
+        
+
+        if(averageAccel > 0.75){
+            shake_count++;
+            missed_shake_count = 0;
+        }
+        else{
+            //Only check if ANY shakes have been detected.
+            missed_shake_count++;
+                //After 100 misses, reset counters.
+            if(missed_shake_count >= 100){
+                shake_count = 0;
+                missed_shake_count = 0;
+            }
+            return false;
+        }         
+       
+
+        if(shake_count > 20){
+            shake_count = 0;
+            return true;
+        }
+
+    }
+    return false;
 }

@@ -4,8 +4,12 @@
 #include "microphone.h"
 #include <M5UnitENV.h>
 
+
 void setup_sensors();
 void publishSensorData();
+
 bool handlePowerButton(bool currentSending);
+
+bool isShaking();
 
 #endif

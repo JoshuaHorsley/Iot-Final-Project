@@ -7,7 +7,6 @@ static bool lockedToTopic = false;
 void updateBackground(bool sending) {
     M5.Display.fillScreen(sending ? TFT_GREEN : TFT_BLUE);
     M5.Display.setTextColor(sending ? TFT_BLACK : TFT_WHITE);
-    M5.Display.setTextSize(2);
 
     M5.Display.setCursor(10, 20);
     M5.Display.println("SENDING:");
@@ -17,7 +16,7 @@ void updateBackground(bool sending) {
 }
 
 void handleIncomingMqttMessage(const String& topic, const String& message) {
-    Serial.print("GUI handling topic: ");
+    Serial.print("GUI topic: ");
     Serial.println(topic);
 
     if (!lockedToTopic) {
@@ -44,15 +43,21 @@ void unlockTopic() {
 void drawTopicMessage(const String& topic, const String& message) {
     M5.Display.fillScreen(TFT_BLACK);
     M5.Display.setTextColor(TFT_WHITE);
-    M5.Display.setTextSize(2);
 
-    M5.Display.setCursor(10, 10);
-    M5.Display.print("Topic:");
-    M5.Display.setCursor(10, 35);
+    int x = 5;
+    int y = 10;
+
+    M5.Display.setCursor(x, y);
+    M5.Display.print("Topic: ");
+
+    y += 20;
+    M5.Display.setCursor(x,y);
     M5.Display.println(topic);
 
-    M5.Display.setCursor(10, 55);
-    M5.Display.print("Msg:");
-    M5.Display.setCursor(10, 75);
+    y += 30;
+    M5.Display.setCursor(x, y);
+    M5.Display.print("Msg: ");
+    y += 20;
+    M5.Display.setCursor(x, y);
     M5.Display.println(message);
 }

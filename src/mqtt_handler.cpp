@@ -31,19 +31,16 @@ CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
 
 void setup_wifi() {
     Serial.println("Connecting to WiFi...");
-    M5.Display.println("Connecting WiFi...");
     WiFi.begin(ssid, password);
     
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
-        M5.Display.print(".");
     }
     
     Serial.println("\nWiFi connected!");
     Serial.print("IP: ");
     Serial.println(WiFi.localIP());
-    M5.Display.println("\nWiFi Connected!");
 }
 
 void initMQTT() {
@@ -57,12 +54,9 @@ void connectToMQTTBroker() {
     while (!client.connected()) {
         String client_id = "esp32-" + String(WiFi.macAddress());
         Serial.println("Connecting to MQTT...");
-        M5.Display.println("Connecting MQTT...");
         
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
-            Serial.println("MQTT Connected!");
-            M5.Display.println("MQTT Connected!");
-            client.publish((mqtt_base + "status").c_str(), "device_online");
+            Serial.println("MQTT Connected");
 
             String subTopic = "+/" + String(deviceId) + "/subscribe";
             String unsubTopic = "+/" + String(deviceId) + "/unsubscribe";
@@ -86,65 +80,69 @@ void connectToMQTTBroker() {
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
     String topicStr(topic);
 
-    String message = "";
-    message.reserve(length);
-    for (unsigned int i = 0; i < length; i++) {
-        message += (char)payload[i];
+    bool isMicBytes = topicStr.endsWith("/mic/bytes");
+
+    String message;
+    if (!isMicBytes) {
+        message.reserve(length);
+        for (unsigned int i = 0; i < length; i++) {
+            message += (char)payload[i];
+        }
     }
 
     Serial.print("Message on topic: ");
     Serial.println(topicStr);
-    Serial.print("Payload: ");
-    Serial.println(message);
 
     int firstSlash = topicStr.indexOf('/');
-    if (firstSlash < 0) {
-        handleIncomingMqttMessage(topicStr, message);
-        return;
+    int secondSlash = -1;
+    if (firstSlash >= 0) {
+        secondSlash = topicStr.indexOf('/', firstSlash + 1);
     }
 
-    int secondSlash = topicStr.indexOf('/', firstSlash + 1);
-    if (secondSlash < 0) {
-        handleIncomingMqttMessage(topicStr, message);
-        return;
-    }
+    bool isControlMessage = (firstSlash >= 0 && secondSlash >= 0);
+    if (isControlMessage == true) {
+        String controllerUserId = topicStr.substring(0, firstSlash);
+        String targetDeviceId = topicStr.substring(firstSlash + 1, secondSlash);
+        String command = topicStr.substring(secondSlash + 1);
 
-    String controllerUserId = topicStr.substring(0, firstSlash);
-    String targetDeviceId = topicStr.substring(firstSlash + 1, secondSlash);
-    String command = topicStr.substring(secondSlash + 1);
+        if (targetDeviceId == String(deviceId) &&(command == "subscribe" || command == "unsubscribe")) {
 
-    if (targetDeviceId == String(deviceId) && (command == "subscribe" || command == "unsubscribe")) {
-        String targetTopic = message;
-        targetTopic.trim();
+            String targetTopic = message;
+            targetTopic.trim();
 
-        if (command == "subscribe") {
-            Serial.print("Control from ");
-            Serial.print(controllerUserId);
-            Serial.print(" -> SUBSCRIBE to: ");
-            Serial.println(targetTopic);
+            if (command == "subscribe") {
+                Serial.print("Control from ");
+                Serial.print(controllerUserId);
+                Serial.print("Unsubscribe to: ");
+                Serial.println(targetTopic);
 
-            if (client.subscribe(targetTopic.c_str())) {
-                Serial.println("Subscribe success");
+                if (client.subscribe(targetTopic.c_str())) {
+                    Serial.println("Subscribe success");
+                } else {
+                    Serial.println("Subscribe failed");
+                }
             } else {
-                Serial.println("Subscribe FAILED");
-            }
-        } 
-        else if (command == "unsubscribe") {
-            Serial.print("Control from ");
-            Serial.print(controllerUserId);
-            Serial.print(" -> UNSUBSCRIBE from: ");
-            Serial.println(targetTopic);
+                Serial.print("Control from ");
+                Serial.print(controllerUserId);
+                Serial.print("Unsubscribe from: ");
+                Serial.println(targetTopic);
 
-            if (client.unsubscribe(targetTopic.c_str())) {
-                Serial.println("Unsubscribe success");
-            } else {
-                Serial.println("Unsubscribe FAILED");
+                if (client.unsubscribe(targetTopic.c_str())) {
+                    Serial.println("Unsubscribe success");
+                } else {
+                    Serial.println("Unsubscribe failed");
+                }
             }
+            return;
         }
+    }
+
+    if (isMicBytes) {
+        Serial.println("Playing mic audio");
+        play_recording((char*)payload, length);
         return;
     }
 
     handleIncomingMqttMessage(topicStr, message);
-
-    // still need to send microphone data to speaker
 }
+

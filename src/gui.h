@@ -6,5 +6,7 @@
 
 void updateBackground(bool sending);
 void handleIncomingMqttMessage(const String& topic, const String& message);
+void unlockTopic();
+void drawTopicMessage(const String& topic, const String& message);
 
 #endif

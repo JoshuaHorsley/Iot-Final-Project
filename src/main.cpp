@@ -54,6 +54,7 @@ void loop() {
     read_buttons();
     if(isShaking()){
         play_beep();
+        unlockTopic();
     }
 
     if (isSending && (millis() - lastPublish >= publishInterval)) {

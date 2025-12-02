@@ -57,6 +57,7 @@ void loop() {
         unlockTopic();
     }
 
+
     if (isSending && (millis() - lastPublish >= publishInterval)) {
         lastPublish = millis();
         publishSensorData();
@@ -76,5 +77,6 @@ void read_buttons(){
     if(M5.BtnPWR.wasPressed()){
         Serial.println("-- PWR BUTTON PRESS --");
         isSending = !isSending;
+        updateBackground(isSending);
     }
 }

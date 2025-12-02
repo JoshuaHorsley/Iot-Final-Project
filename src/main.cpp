@@ -48,8 +48,6 @@ void loop() {
         connectToMQTTBroker();
     }
 
-
-
     client.loop();
         
     mic.RecordOneBlock();
@@ -68,8 +66,14 @@ void loop() {
 void read_buttons(){
     M5.update();
 
+    //If A button pressed, publish recording.
     if(M5.BtnA.wasPressed()){
-        Serial.println("boop.");
+        Serial.println("-- A BUTTON PRESS --");
         mic.PublishRecording();
+    }
+    //If pwr button pressed, toggle sending data.
+    if(M5.BtnPWR.wasPressed()){
+        Serial.println("-- PWR BUTTON PRESS --");
+        isSending = !isSending;
     }
 }

@@ -30,7 +30,7 @@ CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
 -----END CERTIFICATE-----
 )EOF";
 
-// Helper function to split a string on a delimiter
+//Helper function to split a string on a delimiter
 int splitString(String str, char delimiter, String* output, int maxParts) {
     int partIndex = 0;
     int startIndex = 0;
@@ -41,7 +41,7 @@ int splitString(String str, char delimiter, String* output, int maxParts) {
         startIndex = delimIndex + 1;
     }
     
-    // Add the last part (or the whole string if no delimiter found)
+    //Add the last part (or the whole string if no delimiter found)
     if (partIndex < maxParts) {
         output[partIndex++] = str.substring(startIndex);
     }
@@ -135,7 +135,6 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     //Part[3]: CTRL: device ID          ||  battery, or subtopic
     //Part[4]: CTRL: Command            ||  value
 
-
     //IF MESSAGE IS FROM CONTROL DEVICE
     if(topicParts[2] == String(controllerId)){
         String command = topicParts[4];
@@ -183,13 +182,23 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     }
 
 
+    //Make beautiful music
     if (isMicBytes) {
         Serial.println("Playing mic audio");
         play_recording((char*)payload, length);
         return;
     }
 
-    handleIncomingMqttMessage(topicStr, message);
+    //Pass in DeviceID/subtopic name
+    String subtopicName = topicParts[2] + "/" + topicParts[3];
+
+    //Pass in nested subtopic name (if exists.)
+    if(!topicParts[4].isEmpty()){
+        subtopicName = subtopicName + "/" + topicParts[4];
+    }
+
+    //Display to GUI
+    handleIncomingMqttMessage(subtopicName, message);
 }
 
 

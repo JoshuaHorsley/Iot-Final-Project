@@ -84,7 +84,6 @@ bool Microphone::RecordOneBlock(){
 }
 
 //Copy to Mqtt buffer.
-//It felt wrong to do the actual publishing in here.
 bool Microphone::WriteToMqttBuffer(char* buffer, size_t buffer_size){
     
     const size_t total_samples = RECORDING_BUFFER_SIZE;
@@ -162,9 +161,6 @@ bool Microphone::PublishRecording(){
     if(!client.publish(dataTopic.c_str(), (uint8_t*)rec_mqtt_buffer, metaData)){
         Serial.println("client.publish( rec_mqtt_buffer )  returned FALSE.");
     }
-
-    play_recording((char*)recording_buffer, metaData);
-
 
     return true;
 }

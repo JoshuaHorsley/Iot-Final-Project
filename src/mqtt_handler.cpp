@@ -5,6 +5,9 @@ PubSubClient client(espClient);
 String mqtt_base = "SENG3030/Thursday/" + String(deviceId) + "/";
 String mqtt_controller_base = "SENG3030/Thursday/" + String(controllerId) + "/" + String(deviceId) + "/";
 
+int latest_mic_byte_count = 0;
+
+
 const char* ca_cert = R"EOF(
 -----BEGIN CERTIFICATE-----
 MIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh
@@ -103,20 +106,32 @@ void connectToMQTTBroker() {
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
     String topicStr(topic);
-
-    bool isMicBytes = topicStr.endsWith("/mic/bytes");
-
-    String message;
-    if (!isMicBytes) {
-        message.reserve(length);
-        for (unsigned int i = 0; i < length; i++) {
-            message += (char)payload[i];
-        }
-    }
-
     Serial.print("Message on topic: ");
     Serial.println(topicStr);
 
+    if(topicStr.endsWith("/mic/bytes")){
+        //Make beautiful music
+        Serial.println("Playing mic audio");
+        play_recording((char*)payload, latest_mic_byte_count);
+        return;
+   }
+
+
+   
+    //If not a giant mic bytes array, convert bytes from payload
+    String message;
+    message.reserve(length);
+    for (unsigned int i = 0; i < length; i++) {
+        message += (char)payload[i];
+    }
+
+    if(topicStr.endsWith("/mic/meta")){
+        latest_mic_byte_count = message.toInt();
+        Serial.print("Received mic byte count: ");
+        Serial.println(latest_mic_byte_count);
+        return;
+    }
+   
     // Split topic on '/' to get an array of topic parts
     String topicParts[10];
     int numParts = splitString(topicStr, '/', topicParts, 10);
@@ -182,12 +197,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     }
 
 
-    //Make beautiful music
-    if (isMicBytes) {
-        Serial.println("Playing mic audio");
-        play_recording((char*)payload, length);
-        return;
-    }
+
 
     //Pass in DeviceID/subtopic name
     String subtopicName = topicParts[2] + "/" + topicParts[3];

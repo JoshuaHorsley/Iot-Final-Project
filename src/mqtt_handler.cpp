@@ -3,6 +3,7 @@
 WiFiClientSecure espClient;
 PubSubClient client(espClient);
 String mqtt_base = "SENG3030/Thursday/" + String(deviceId) + "/";
+String mqtt_controller_base = "SENG3030/Thursday/" + String(controllerId) + "/" + String(deviceId) + "/";
 
 const char* ca_cert = R"EOF(
 -----BEGIN CERTIFICATE-----
@@ -58,8 +59,12 @@ void connectToMQTTBroker() {
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
             Serial.println("MQTT Connected");
 
-            String subTopic = "+/" + String(deviceId) + "/subscribe";
-            String unsubTopic = "+/" + String(deviceId) + "/unsubscribe";
+            //Jrice1041/subscribe
+
+            //Base: SENG3030/Thursday/Jrice1041/
+            //Post: SENG3030/Thursday/<CTRLID>/Jrice1041/subscribe
+            String subTopic = String(mqtt_controller_base) + "subscribe";
+            String unsubTopic = String(mqtt_controller_base) + "unsubscribe";
 
             client.subscribe(subTopic.c_str());
             client.subscribe(unsubTopic.c_str());

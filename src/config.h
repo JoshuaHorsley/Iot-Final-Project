@@ -10,5 +10,6 @@ constexpr const char* mqtt_broker = "p07da41d.ala.us-east-1.emqxsl.com";
 constexpr int mqtt_port = 8883;
 
 constexpr const char* deviceId = "Jrice1041";
+constexpr const char* controllerId = "Jhorsley3072";
 
 #endif

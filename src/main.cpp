@@ -47,15 +47,19 @@ void loop() {
     if (!client.connected()) {
         connectToMQTTBroker();
     }
-
-
-
     client.loop();
+
+    bool prevSending = isSending;
+    isSending = handlePowerButton(isSending);
+    if (isSending != prevSending) {
+        updateBackground(isSending);
+    }
         
     mic.RecordOneBlock();
     read_buttons();
     if(isShaking()){
         play_beep();
+        unlockTopic();
     }
 
     if (isSending && (millis() - lastPublish >= publishInterval)) {

@@ -6,7 +6,7 @@
 
 void updateBackground(bool sending);
 void handleIncomingMqttMessage(const String& topic, const String& message);
-void unlockTopicAfterShake();
+void unlockTopic();
 void drawTopicMessage(const String& topic, const String& message);
 
 #endif
